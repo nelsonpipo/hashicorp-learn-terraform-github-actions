@@ -12,23 +12,23 @@ env:
     TF_CLOUD_ORGANIZATION: "Nelsito"
     TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
     TF_WORKSPACE: "learn-terraform-github-actions"
-    CONFIG_DIRECTORY: "./"
+    #CONFIG_DIRECTORY: "./"
        
 jobs:
   terraform-plan-output:
     if: github.event_name == 'pull_request'
-    defaults:
-      run:
-        working-directory: CONFIG_DIRECTORY
+    #defaults:
+    #  run:
+    #    working-directory: CONFIG_DIRECTORY
     name: Terraform
     runs-on: ubuntu-latest
-    env:
-      ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
-      ARM_SUBSCRIPTION_ID: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-      ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
+    #env:
+    #  ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+    #  ARM_SUBSCRIPTION_ID: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+    #  ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v2.5.0
+      uses: actions/checkout@v4.1.6
  
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
