@@ -17,6 +17,7 @@ terraform {
 
 provider "aws" {
   region = "us-west-2"
+  use_fips_endpoint = true
 }
 
 resource "random_pet" "sg" {}
