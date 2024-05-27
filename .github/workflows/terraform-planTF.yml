@@ -6,8 +6,7 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-    AWS_ACCESS_KEY_ID:
+
    
     
 jobs:
@@ -44,6 +43,9 @@ jobs:
        
     - name: Terraform Plan
       id: plan
+      env:
+        AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
       run: terraform plan -no-color
       continue-on-error: true
        
