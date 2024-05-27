@@ -5,7 +5,9 @@ on:
      - main
   pull_request:
   workflow_dispatch:
-
+env:
+  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
 
    
     
@@ -17,14 +19,9 @@ jobs:
     permissions:
         pull-requests: write
     steps:
+    - run: echo "access_key= ${{vars.AWS_ACCESS_KEY_ID}}"
     - name: Checkout Code
       uses: actions/checkout@v4.1.6
-    
-    - uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: us-east-2
-        aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
  
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
@@ -33,9 +30,6 @@ jobs:
         terraform_wrapper: true
  
     - name: Terraform Init
-      env:
-        AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
       id: init
       run: terraform init
          
@@ -49,9 +43,6 @@ jobs:
        
     - name: Terraform Plan
       id: plan
-      env:
-        AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
       run: terraform plan -no-color -detailed-exitcode
       continue-on-error: true
        
