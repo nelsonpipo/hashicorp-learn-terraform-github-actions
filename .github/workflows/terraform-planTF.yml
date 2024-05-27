@@ -19,7 +19,10 @@ jobs:
     permissions:
         pull-requests: write
     steps:
-    - run: echo "access_key= ${{vars.AWS_ACCESS_KEY_ID}}"
+    - run: |
+        echo "access_key= ${{secrets.AWS_SECRET_ACCESS_KEY}}"
+        export AWS_ACCESS_KEY_ID=${{vars.AWS_ACCESS_KEY_ID}}
+        export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
     - name: Checkout Code
       uses: actions/checkout@v4.1.6
  
