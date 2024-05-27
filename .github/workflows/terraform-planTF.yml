@@ -5,13 +5,18 @@ on:
      - main
   pull_request:
   workflow_dispatch:
+
+env:
+    AWS_ACCESS_KEY_ID:
+   
     
 jobs:
   terraform-plan-output:
     name: Terraform
     runs-on: ubuntu-latest
+    environment: Prod
     permissions:
-            pull-requests: write
+        pull-requests: write
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4.1.6
@@ -34,7 +39,10 @@ jobs:
       id: validate
       run: terraform validate -no-color
        
-    - name: Terraform Plan  
+    - name: Terraform Plan
+      env:
+        AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
       id: plan
       run: terraform plan -no-color
       continue-on-error: true
