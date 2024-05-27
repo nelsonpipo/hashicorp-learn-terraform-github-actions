@@ -20,7 +20,7 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
-        #cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
         terraform_wrapper: true
  
     - name: Terraform Init
@@ -44,7 +44,7 @@ jobs:
     - name: Update Pull Request
       uses: actions/github-script@v7
       with:
-        github-token: ${{ secrets.TF_API_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const output = `#### Terraform Format and Style <img draggable="false" role="img" class="emoji" alt="🖌" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f58c.svg">\`${{ steps.fmt.outcome }}\`
           #### Terraform Initialization <img draggable="false" role="img" class="emoji" alt="🤖" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f916.svg">\`${{ steps.init.outcome }}\`
