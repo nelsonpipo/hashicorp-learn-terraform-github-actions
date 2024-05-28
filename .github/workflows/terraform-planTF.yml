@@ -46,8 +46,8 @@ jobs:
     - name: Update Pull Request
       uses: actions/github-script@v7
       if: github.event_name == 'pull_request'
-      env:
-        PLAN: ${{ steps.plan.outputs.stdout }}
+      #env:
+      #  PLAN: ${{ steps.plan.outputs.stdout }}
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -73,13 +73,13 @@ jobs:
             <details><summary>Show Plan</summary>
 
             \`\`\`terraform\n
-            ${process.env.PLAN}
+            ${{steps.plan.outputs.stdout}}
             \`\`\`
 
             </details>
 
             *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-            
+
             // 3. Delete previous comment so PR timeline makes sense
             if (botComment) {
               github.rest.issues.deleteComment({
