@@ -65,9 +65,9 @@ jobs:
             #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
             #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            #### Terraform Plan 📖\`${{ steps.plan.outputs.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
                \`\`\`
-               Plan: ${{ steps.plan.outputs.add }} to add, ${{ steps.plan.outputs.change }} to change, ${{ steps.plan.outputs.destroy }} to destroy.
+               Plan: ${{ steps.plan.outputs.stdout.add }} to add, ${{ steps.plan.outcome.change }} to change, ${{ steps.plan.conclusion.destroy }} to destroy.
                \`\`\`
 
             <details><summary>Show Plan</summary>
