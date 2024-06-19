@@ -1,0 +1,101 @@
+name: Terraform PlanTF
+on:
+  push:
+    branches:
+     - main
+  pull_request:
+  workflow_dispatch:
+env:
+  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+    
+jobs:
+  terraform-plan-output:
+    name: Terraform
+    runs-on: ubuntu-latest
+    environment: Prod
+    permissions:
+        pull-requests: write
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4.1.6
+ 
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        terraform_wrapper: true
+ 
+    - name: Terraform Init
+      id: init
+      run: terraform init
+         
+    - name: Terraform Fmt
+      id: fmt
+      run: terraform fmt -check
+ 
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+       
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -no-color -detailed-exitcode
+      continue-on-error: true
+       
+    - name: Update Pull Request
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request'
+      #env:
+      #  PLAN: ${{ steps.plan.outputs.stdout }}
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Cloud Plan Output')
+            });
+
+            const output = `#### Terraform Cloud Plan Output
+            #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`terraform\n
+            ${{steps.plan.outputs.stdout}}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            // 3. Delete previous comment so PR timeline makes sense
+            if (botComment) {
+              github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+              });
+            }
+
+            github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+            })
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+    
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false

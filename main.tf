@@ -5,18 +5,27 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.52.0"
+      version = "5.44.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.4.3"
+      version = "3.6.0"
     }
   }
   required_version = ">= 1.1.0"
+
+  backend "remote" {
+    organization = "Nelsito"
+
+    workspaces {
+      name = "learn-terraform-github-actions"
+    }
+  }
 }
 
 provider "aws" {
-  region = "us-west-2"
+  region            = "us-east-1"
+  use_fips_endpoint = true
 }
 
 resource "random_pet" "sg" {}
